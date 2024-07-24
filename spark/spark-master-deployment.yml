@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spark-master
+  namespace: spark-updated
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      role: spark-master
+  template:
+    metadata:
+      labels:
+        role: spark-master
+    spec:
+      containers:
+      - name: spark-master
+        image: bitnami/spark:latest
+        env:
+        - name: SPARK_MASTER_PORT
+          value: "7077"
+        - name: SPARK_MASTER_WEBUI_PORT
+          value: "8080"
+        ports:
+        - containerPort: 7077
+        - containerPort: 8080
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        volumeMounts:
+        - name: spark-config-volume
+          mountPath: /opt/bitnami/spark/conf/spark-defaults.conf
+          subPath: spark-defaults.conf
+      volumes:
+      - name: spark-config-volume
+        configMap:
+          name: spark-config

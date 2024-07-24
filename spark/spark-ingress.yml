@@ -1,0 +1,49 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: spark-ingress
+  namespace: spark-updated
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: km01.itversity.com
+      http:
+        paths:
+          - path: /spark(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: spark-master
+                port:
+                  number: 80
+          - path: /static(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: spark-master
+                port:
+                  number: 80
+          - path: /spark/worker1(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: spark-worker-1
+                port:
+                  number: 80
+          - path: /spark/worker2(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: spark-worker-2
+                port:
+                  number: 80
+          - path: /app(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: spark-master
+                port:
+                  number: 80
