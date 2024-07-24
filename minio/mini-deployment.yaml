@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minio
+  namespace: minio-operators
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: minio
+  template:
+    metadata:
+      labels:
+        app: minio
+    spec:
+      containers:
+        - name: minio
+          image: quay.io/minio/minio:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9000
+              name: s3
+            - containerPort: 9090
+              name: console
+          env:
+            - name: MINIO_BROWSER_REDIRECT_URL
+              value: "https://kd.itversity.com/minio"
+          volumeMounts:
+            - mountPath: /data
+              name: data
+          resources:
+            requests:
+              memory: "1000Mi"
+              cpu: "1000m"
+            limits:
+              memory: "1500Mi"
+              cpu: "1500m"
+          command:
+            - /bin/sh
+            - -c
+            - "exec /usr/bin/minio server /data --address :9000 --console-address :9090"
+      volumes:
+        - name: data
+          emptyDir:
+            sizeLimit: 500Mi
+      restartPolicy: Always

@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: minio-ingress
+  namespace: minio-operators
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: basic-auth
+    nginx.ingress.kubernetes.io/auth-realm: 'Authentication Required - Minio'
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: km01.itversity.com
+    http:
+      paths:
+      - path: /minio(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: minio
+            port:
+              number: 80
+      - path: /minio/
+        pathType: Prefix
+        backend:
+          service:
+            name: minio
+            port:
+              number: 80
