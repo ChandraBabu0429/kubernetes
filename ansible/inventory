@@ -1,0 +1,9 @@
+[all]
+km01.itversity.com ansible_user=ubuntu ansible_ssh_private_key_file=/home/chaitanya/.ssh/id_rsa
+kw01.itversity.com ansible_user=ubuntu ansible_ssh_private_key_file=/home/chaitanya/.ssh/id_rsa
+
+[kubernetes-master-node]
+km01.itversity.com ansible_user=ubuntu ansible_ssh_private_key_file=/home/chaitanya/.ssh/id_rsa
+
+[kubernetes-worker-nodes]
+kw01.itversity.com ansible_user=ubuntu ansible_ssh_private_key_file=/home/chaitanya/.ssh/id_rsa

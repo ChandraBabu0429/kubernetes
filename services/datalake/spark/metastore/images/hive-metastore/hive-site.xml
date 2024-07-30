@@ -1,0 +1,63 @@
+<configuration>
+    <!-- MinIO Configuration -->
+    <property>
+        <name>fs.s3a.endpoint</name>
+        <value>http://10.98.192.10:9000</value>
+    </property>
+    <property>
+        <name>fs.s3a.access.key</name>
+        <value>ZF38UffTDWK3uDvdjTE3</value>
+    </property>
+    <property>
+        <name>fs.s3a.secret.key</name>
+        <value>WJW2vZY0eBKu1KkPcLGumTzSi2AWdjG2NtxrmgG3</value>
+    </property>
+    <property>
+        <name>fs.s3a.path.style.access</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>fs.s3.impl</name>
+        <value>org.apache.hadoop.fs.s3a.S3AFileSystem</value>
+    </property>
+    <property>
+        <name>hive.metastore.warehouse.dir</name>
+        <value>s3a://itvmetastore/spark/warehouse/</value>
+    </property>
+
+    <!-- Ensure that Hive uses S3A filesystem -->
+    <property>
+        <name>fs.defaultFS</name>
+        <value>s3a://itvmetastore/</value>
+    </property>
+
+    <!-- Hive Metastore Database Configuration -->
+    <property>
+        <name>javax.jdo.option.ConnectionURL</name>
+        <value>jdbc:postgresql://kd.itversity.com:30007/spark</value>
+    </property>
+    <property>
+        <name>javax.jdo.option.ConnectionDriverName</name>
+        <value>org.postgresql.Driver</value>
+    </property>
+    <property>
+        <name>javax.jdo.option.ConnectionUserName</name>
+        <value>spark</value>
+    </property>
+    <property>
+        <name>javax.jdo.option.ConnectionPassword</name>
+        <value>Itversity123</value>
+    </property>
+    <property>
+        <name>datanucleus.schema.autoCreateAll</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>hive.metastore.schema.verification</name>
+        <value>false</value>
+    </property>
+    <property>
+        <name>hive.metastore.uris</name>
+        <value>thrift://spark-metastore:9083</value>
+    </property>
+</configuration>

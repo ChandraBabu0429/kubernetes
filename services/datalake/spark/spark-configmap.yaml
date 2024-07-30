@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: spark-config
+  namespace: spark
+data:
+  spark-defaults.conf: |
+    spark.sql.warehouse.dir s3a://spark-data/
+    spark.hadoop.javax.jdo.option.ConnectionURL jdbc:postgresql://spark-postgresql.spark.svc.cluster.local:5432/spark
+    spark.hadoop.javax.jdo.option.ConnectionDriverName org.postgresql.Driver
+    spark.hadoop.javax.jdo.option.ConnectionUserName spark
+    spark.hadoop.javax.jdo.option.ConnectionPassword your_postgres_password_here
+    spark.hadoop.fs.s3a.endpoint http://minio-service.minio:9000
+    spark.hadoop.fs.s3a.access.key $(MINIO_ACCESS_KEY)
+    spark.hadoop.fs.s3a.secret.key $(MINIO_SECRET_KEY)
+    spark.hadoop.fs.s3a.path.style.access true
+    spark.hadoop.fs.s3a.impl org.apache.hadoop.fs.s3a.S3AFileSystem
+    spark.executor.instances 3
+    spark.executor.cores 4
+    spark.executor.memory 6g
+    spark.driver.memory 3g

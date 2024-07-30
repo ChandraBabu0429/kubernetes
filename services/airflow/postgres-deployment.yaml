@@ -1,0 +1,38 @@
+# postgres-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: airflow-postgresql
+  namespace: airflow
+spec:
+  selector:
+    matchLabels:
+      app: airflow-postgresql
+  template:
+    metadata:
+      labels:
+        app: airflow-postgresql
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:15  # Updated to use PostgreSQL version 15
+        env:
+        - name: POSTGRES_DB
+          value: airflow
+        - name: POSTGRES_USER
+          value: airflow
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: airflow-postgresql
+              key: postgres-password
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data
+          subPath: postgres  # This ensures PostgreSQL data is stored in a subfolder
+      volumes:
+      - name: postgres-storage
+        persistentVolumeClaim:
+          claimName: postgres-pvc

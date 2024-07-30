@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: airflow-db-init
+  namespace: airflow
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: airflow-db-init
+        image: apache/airflow:2.9.3
+        env:
+          - name: AIRFLOW__CORE__SQL_ALCHEMY_CONN
+            value: "postgresql://airflow:${POSTGRES_PASSWORD}@airflow-postgresql:5432/airflow"
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: airflow-postgresql
+                key: airflow-postgres-password
+        command: ["airflow"]
+        args: ["db", "migrate"]
+  backoffLimit: 4

@@ -1,0 +1,11 @@
+import os
+
+SECRET_KEY = 'b7VLxhDfLYo+VNd7gb49/ATDQAZkkvNb88uKfFtVVOifnAdYAfBFQj98'
+FLASK_APPBUILDER_GLOBAL_FLASK_APP_BLUEPRINTS = "superset"
+FAB_UPDATE_PERMS = True
+WTF_CSRF_ENABLED = True
+MAPBOX_API_KEY = ""
+SESSION_COOKIE_SAMESITE = None
+ENABLE_PROXY_FIX = True
+POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD')
+SQLALCHEMY_DATABASE_URI = f'postgresql+psycopg2://superset:{POSTGRES_PASSWORD}@superset-postgresql.superset.svc.cluster.local:5432/superset'

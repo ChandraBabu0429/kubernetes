@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: spark-master
+  namespace: spark-updated
+spec:
+  ports:
+  - name: master
+    port: 7077
+    targetPort: 7077
+  - name: webui
+    port: 80
+    targetPort: 8080
+  selector:
+    role: spark-master
+  type: ClusterIP

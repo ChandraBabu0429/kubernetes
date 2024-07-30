@@ -1,0 +1,20 @@
+# redis-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: airflow-redis
+  namespace: airflow
+spec:
+  selector:
+    matchLabels:
+      app: airflow-redis
+  template:
+    metadata:
+      labels:
+        app: airflow-redis
+    spec:
+      containers:
+      - name: airflow-redis
+        image: redis:6
+        ports:
+        - containerPort: 6379

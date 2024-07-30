@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: spark-worker-service
+  namespace: spark
+spec:
+  ports:
+  - name: webui
+    port: 8086
+    targetPort: 8086
+  selector:
+    component: spark-worker
+  type: ClusterIP

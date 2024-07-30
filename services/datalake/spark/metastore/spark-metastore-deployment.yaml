@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spark-metastore
+  namespace: spark
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spark-metastore
+  template:
+    metadata:
+      labels:
+        app: spark-metastore
+    spec:
+      containers:
+      - name: spark-metastore
+        image: dgadiraju/itvhive:3.1.3
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 9083
+        env:
+        - name: HIVE_METASTORE_DB_TYPE
+          value: "postgres"
+        - name: HIVE_METASTORE_DB_HOST
+          value: "spark-postgresql"
+        - name: HIVE_METASTORE_DB_PORT
+          value: "5432"
+        - name: HIVE_METASTORE_DB_NAME
+          value: "spark"
+        - name: HIVE_METASTORE_DB_USER
+          value: "spark"
+        - name: HIVE_METASTORE_DB_PASS
+          valueFrom:
+            secretKeyRef:
+              name: spark-postgresql
+              key: spark-postgres-password
+        volumeMounts:
+        - name: hive-config
+          mountPath: /opt/hive/conf
+      volumes:
+      - name: hive-config
+        configMap:
+          name: hive-config

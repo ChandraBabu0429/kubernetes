@@ -1,0 +1,19 @@
+- name: Configure Docker and Kubernetes
+  hosts: all
+  become: true
+  roles:
+    - common
+    - docker
+    - kubernetes
+
+- name: Initialize Kubernetes Master Node
+  hosts: kubernetes-master-node
+  become: true
+  roles:
+    - master
+
+- name: Join worker nodes to the cluster
+  hosts: kubernetes-worker-nodes
+  become: true
+  roles:
+    - worker

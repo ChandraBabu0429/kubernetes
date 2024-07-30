@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-app
+  namespace: python  # Specify the namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: python-app
+  template:
+    metadata:
+      labels:
+        app: python-app
+    spec:
+      containers:
+      - name: python-container
+        image: python:latest  # Specify the latest Python version
+        command:
+          - "sh"
+          - "-c"
+          - "python --version && sleep infinity"  # Command to verify Python version and keep the container running
+

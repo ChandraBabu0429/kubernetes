@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: superset-config
+  namespace: superset1
+data:
+  superset_config.py: |-
+    # Superset specific configuration
+
+    # Flask App Builder configuration
+    FLASK_APPBUILDER_GLOBAL_FLASK_APP_BLUEPRINTS = ['superset']
+    FAB_UPDATE_PERMS = True
+
+    # Your App secret key
+    SECRET_KEY = 'PC9KCr8AB7XSjXNb6u/UGRcAglBWSfpsWmj5NnNxD/o='
+
+    # The SQLAlchemy connection string to your database backend
+    SQLALCHEMY_DATABASE_URI = 'postgresql://itv_db:Itversity123@kd.itversity.com:31789/postgres'
+
+    # Flask-WTF flag for CSRF
+    WTF_CSRF_ENABLED = True
+
+    # Set this API key to enable Mapbox visualizations
+    MAPBOX_API_KEY = ''
+
+    # Flask Session configuration
+    SESSION_COOKIE_SAMESITE = None
+
+    # Static files base path
+    STATIC_URL_PATH = '/superset/static'
+
+    # Application base path
+    APPLICATION_ROOT = '/superset'
+    
+    # Enabling BASE_PATH for reverse proxy
+    BASE_PATH = '/superset'
+    
+    # Preferred URL scheme
+    PREFERRED_URL_SCHEME = 'https'
+    
+    # Enable proxy fix for handling reverse proxy headers
+    ENABLE_PROXY_FIX = True  
+
+    # Additional configuration
+    SUPERSET_WEBSERVER_DOMAINS = ['kd.itversity.com']

@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: superset1
+  namespace: superset1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: superset1
+  template:
+    metadata:
+      labels:
+        app: superset1
+    spec:
+      containers:
+        - name: superset1
+          image: chandu0616/superset:latest1
+          ports:
+            - containerPort: 8088
+          env:
+            - name: FLASK_APPBUILDER_GLOBAL_FLASK_APP_BLUEPRINTS
+              value: "superset"
+            - name: FAB_UPDATE_PERMS
+              value: "true"
+            - name: SECRET_KEY
+              value: "PC9KCr8AB7XSjXNb6u/UGRcAglBWSfpsWmj5NnNxD/o="
+            - name: SQLALCHEMY_DATABASE_URI
+              value: "postgresql://itv_db:Itversity123@kd.itversity.com:31789/postgres"
+            - name: WTF_CSRF_ENABLED
+              value: "true"
+            - name: MAPBOX_API_KEY
+              value: ""
+            - name: SESSION_COOKIE_SAMESITE
+              value: "None"
+            - name: HOST_URL
+              value: "https://kd.itversity.com/superset"
+            - name: SUPERSET_BROWSER_REDIRECT_URL
+              value: "https://kd.itversity.com/superset"
+            - name: FLASK_LIMITER_STORAGE_URI
+              value: "postgresql://itv_db:Itversity123@kd.itversity.com:31789/postgres"
+            - name: APPLICATION_ROOT
+              value: "/superset"
+            - name: ENABLE_PROXY_FIX
+              value: "true"
+

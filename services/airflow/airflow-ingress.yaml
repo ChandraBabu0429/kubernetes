@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: airflow-ingress
+  namespace: airflow
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"  # Allow unlimited body size
+    nginx.ingress.kubernetes.io/rewrite-target: "/$2"  # Rewrite target using captured groups
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"  # Disable SSL redirect for testing; set to "true" in production
+spec:
+  ingressClassName: nginx  # Specify the Ingress class
+  rules:
+  - host: kd.itversity.com
+    http:
+      paths:
+      - path: /airflow(/|$)(.*)  # Matches /airflow and any subpath
+        pathType: ImplementationSpecific  # Uses the prefix rule for matching
+        backend:
+          service:
+            name: airflow-webserver  # Corrected to the actual service name
+            port:
+              number: 8080  # Corrected to the actual port the webserver is running on
+      - path: /airflow/static/(.*)  # Matches /airflow/static and any subpath
+        pathType: ImplementationSpecific  # This uses the specific implementation of the ingress controller
+        backend:
+          service:
+            name: airflow-webserver  # Corrected to the actual service name
+            port:
+              number: 8080  # Corrected to the actual port the webserver is running on

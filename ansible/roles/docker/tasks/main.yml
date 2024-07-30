@@ -1,0 +1,32 @@
+---
+- name: Add Docker GPG key
+  shell: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+  changed_when: false
+
+- name: Add Docker repository
+  apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+    state: present
+
+- name: Update apt cache
+  apt:
+    update_cache: yes
+
+- name: Install Docker
+  apt:
+    name: docker-ce
+    state: present
+
+- name: Start and enable Docker
+  service:
+    name: docker
+    state: started
+    enabled: yes
+  failed_when: false
+  register: docker_service
+
+- name: Restart Docker
+  service:
+    name: docker
+    state: restarted
+  when: docker_service is changed

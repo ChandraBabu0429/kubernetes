@@ -1,0 +1,38 @@
+# postgres-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: superset-postgresql
+  namespace: superset
+spec:
+  selector:
+    matchLabels:
+      app: superset-postgresql
+  template:
+    metadata:
+      labels:
+        app: superset-postgresql
+    spec:
+      containers:
+      - name: superset-postgres
+        image: postgres:15  # Updated to use PostgreSQL version 15
+        env:
+        - name: POSTGRES_DB
+          value: superset
+        - name: POSTGRES_USER
+          value: superset
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: superset-postgresql
+              key: superset-postgres-password
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - name: superset-postgres-storage
+          mountPath: /var/lib/postgresql/data
+          subPath: superset-postgres  # This ensures PostgreSQL data is stored in a subfolder
+      volumes:
+      - name: superset-postgres-storage
+        persistentVolumeClaim:
+          claimName: superset-postgres-pvc

@@ -1,0 +1,91 @@
+---
+    - name: Install containerd
+      apt:
+        name: containerd
+        state: present
+        update_cache: yes
+
+    - name: Configure containerd
+      copy:
+        content: |
+          version = 2
+          [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
+            runtime_type = "io.containerd.runc.v2"
+            [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
+              SystemdCgroup = true
+        dest: /etc/containerd/config.toml
+
+    - name: Restart containerd
+      service:
+        name: containerd
+        state: restarted
+        enabled: yes
+
+  
+    - name: Initialize Kubernetes master node
+      command: kubeadm init --pod-network-cidr=192.168.0.0/16
+      args:
+        creates: /etc/kubernetes/admin.conf
+      register: kubeadm_init_result
+
+    - name: Ensure /tmp/kubeadm_init_output/ directory exists
+      file:
+        path: /tmp/kubeadm_init_output
+        state: directory
+        mode: '0755'
+
+    - block:
+        - name: Wait for API server to be ready
+          command: kubectl get nodes
+          register: result
+          until: result.rc == 0
+          retries: 15
+          delay: 10
+          environment:
+            KUBECONFIG: /etc/kubernetes/admin.conf
+
+        - name: Write join token to a file
+          become: true
+          shell: kubeadm token create --print-join-command > /tmp/kubeadm_init_output/join_token.txt
+          when: kubeadm_init_result.rc == 0
+
+        - name: Create .kube directory
+          file:
+            path: /home/ubuntu/.kube
+            state: directory
+            mode: '0755'
+
+        - name: Copy kubeconfig to user's kube directory
+          copy:
+            src: /etc/kubernetes/admin.conf
+            dest: /home/ubuntu/.kube/config
+            remote_src: yes
+
+        - name: Set ownership of the kubeconfig file
+          file:
+            path: /home/ubuntu/.kube/config
+            owner: ubuntu
+            group: ubuntu
+            mode: '0644'
+
+        - name: Wait for API server to be ready for user commands
+          command: kubectl get nodes
+          register: result
+          until: result.rc == 0
+          retries: 5
+          delay: 10
+          environment:
+            KUBECONFIG: /home/ubuntu/.kube/config    
+
+        - name: Check if Calico is already installed
+          command: kubectl get pods -n kube-system | grep calico
+          register: calico_check
+          ignore_errors: true
+
+        - name: Install Calico network plugin
+          shell: kubectl apply -f https://docs.projectcalico.org/v3.25/manifests/calico.yaml --validate=false
+          environment:
+            KUBECONFIG: /home/ubuntu/.kube/config
+          when: calico_check.rc != 0  # Install only if Calico is not already installed
+      run_once: true
+      when: kubeadm_init_result.rc == 0

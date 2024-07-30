@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: spark-debug-pod
+  namespace: spark
+spec:
+  containers:
+  - name: spark-debug-container
+    image: bitnami/spark:latest
+    command: ["sleep"]
+    args: ["infinity"]

@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jupyterlab
+  namespace: jupyterlab
+  labels:
+    name: jupyterlab
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: jupyterlab
+  template:
+    metadata:
+      labels:
+        name: jupyterlab
+    spec:
+      containers:
+        - name: jupyterlab
+          image: chandu0616/jupyterlab:latest  # Use the custom image you just pushed
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8888
+          command:
+            - /bin/bash
+            - -c
+            - |
+              start.sh jupyter lab --LabApp.token='Itversity123' --LabApp.ip='0.0.0.0' --LabApp.allow_root=True --LabApp.base_url=/jupyterlab/
+          volumeMounts:
+            - name: jupyterlab-data
+              mountPath: /home/itv/jupyterhub
+          resources:
+            requests:
+              memory: 500Mi
+              cpu: 250m
+      restartPolicy: Always
+      volumes:
+        - name: jupyterlab-data
+          persistentVolumeClaim:
+            claimName: jupyterlab-pvc

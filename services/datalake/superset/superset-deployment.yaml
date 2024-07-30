@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: superset
+  namespace: superset
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: superset
+  template:
+    metadata:
+      labels:
+        app: superset
+    spec:
+      containers:
+      - name: superset
+        image: apache/superset:4.0.2
+        ports:
+        - containerPort: 8088
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/superset_config.py
+          subPath: superset_config.py
+        envFrom:
+        - configMapRef:
+            name: superset-config
+        env:
+        - name: PYTHONPATH
+          value: "/app"
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: superset-secrets
+              key: superset-secret-key
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: superset-postgresql
+              key: superset-postgres-password
+      volumes:
+      - name: config-volume
+        configMap:
+          name: superset-config

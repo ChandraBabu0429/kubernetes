@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: airflow-scheduler
+  namespace: airflow
+spec:
+  selector:
+    matchLabels:
+      component: scheduler
+  template:
+    metadata:
+      labels:
+        component: scheduler
+    spec:
+      containers:
+      - name: scheduler
+        image: apache/airflow:2.9.3
+        command: ["airflow"]
+        args: ["scheduler"]
+        env:
+        - name: AIRFLOW__CORE__EXECUTOR
+          value: "CeleryExecutor"
+        - name: AIRFLOW__CELERY__BROKER_URL
+          value: "redis://redis.airflow.svc.cluster.local:6379/0"
+        - name: AIRFLOW__CORE__SQL_ALCHEMY_CONN
+          value: "postgresql+psycopg2://airflow:Itversity123@airflow-postgresql.airflow.svc.cluster.local:5432/airflow"
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: airflow-postgresql
+              key: postgres-password
+        - name: LOAD_EX
+          value: "False"

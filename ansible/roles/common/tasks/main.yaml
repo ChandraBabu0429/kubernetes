@@ -1,0 +1,11 @@
+---
+- name: Install dependencies
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - software-properties-common
+    - containerd

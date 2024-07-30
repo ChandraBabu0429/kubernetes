@@ -1,0 +1,34 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: superset-ingress
+  namespace: superset1
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /superset$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: kd.itversity.com
+    http:
+      paths:
+      - path: /superset(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: superset1-service 
+            port:
+              number: 80
+      - path: /static(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: superset1-service 
+            port:
+              number: 80
+  tls:
+  - hosts:
+    - kd.itversity.com
+    secretName: itversity-tls

@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spark-postgresql
+  namespace: spark
+spec:
+  selector:
+    matchLabels:
+      app: spark-postgresql
+  template:
+    metadata:
+      labels:
+        app: spark-postgresql
+    spec:
+      containers:
+      - name: spark-postgres
+        image: postgres:15  # Updated to use PostgreSQL version 15
+        env:
+        - name: POSTGRES_DB
+          value: spark
+        - name: POSTGRES_USER
+          value: spark
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: spark-postgresql
+              key: spark-postgres-password
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - name: spark-postgres-storage
+          mountPath: /var/lib/postgresql/data
+          subPath: spark-postgres
+        - name: spark-postgres-config-volume
+          mountPath: /etc/postgresql/postgresql.conf
+          subPath: postgresql.conf
+        - name: spark-postgres-config-volume
+          mountPath: /etc/postgresql/pg_hba.conf
+          subPath: pg_hba.conf
+        args:
+        - "-c"
+        - "config_file=/etc/postgresql/postgresql.conf"
+        - "-c"
+        - "hba_file=/etc/postgresql/pg_hba.conf"
+      volumes:
+      - name: spark-postgres-storage
+        persistentVolumeClaim:
+          claimName: spark-postgres-pvc
+      - name: spark-postgres-config-volume
+        configMap:
+          name: spark-postgres-config
